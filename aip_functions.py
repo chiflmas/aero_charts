@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from tqdm import tqdm
+
 
 def file_name(url):
     """
@@ -15,6 +15,7 @@ def file_name(url):
     file_name = url.split("/")[-1]
     return file_name
 
+
 def create_url(url, pdf):
     """
     Joins base urls and pdf name to create the pdf url
@@ -24,6 +25,7 @@ def create_url(url, pdf):
     """
     url = url + pdf
     return url
+
 
 def parse_pdf(soup):
     """
@@ -38,6 +40,7 @@ def parse_pdf(soup):
                       filter(lambda i: "pdf" in i, pdf)))
     return pdf
 
+
 def create_path(soup):
     """
     Creates path with date+airac date format
@@ -50,6 +53,7 @@ def create_path(soup):
     airac_cycle = soup.find('div', {'class': 'actualizado'}).get_text(strip=True)
     path = ''.join((date, '(', re.findall(r'(^[^\s]+)', airac_cycle)[0], ')'))
     return path
+
 
 def create_airport_folders(airports, access_rights, soup):
     """
@@ -74,6 +78,7 @@ def create_airport_folders(airports, access_rights, soup):
         else:
             print("\nSuccessfully created the directory %s" % (path + "/" + airport))
 
+
 def download_file(url, path, file_name):
     """
     Download PDF air chart from URL and saves it in the OACI airport folder
@@ -84,10 +89,10 @@ def download_file(url, path, file_name):
     """
     try:
         # Request
-        html = requests.get(url, stream=True) # Stream to get data in chunks for tqdm
+        html = requests.get(url, stream=True)  # Stream to get data in chunks for tqdm
         if html.status_code != 200:
             print('\nFailure Message {}'.format(html.text))
-        #OACI code folder
+        # OACI code folder
         folder = re.findall(r'.*\/(.*)\/.*', url)[0]
         # Save pdf to oaci airport folder
         with open(path + "/" + folder + "/" + file_name, 'wb+') as f:
@@ -95,7 +100,7 @@ def download_file(url, path, file_name):
             pbar = tqdm(unit="B",
                         unit_scale=True,
                         unit_divisor=1024,
-                        #leave=False,
+                        colour="red",
                         total=int(html.headers['Content-Length']))
             pbar.clear()
             # Pbar description

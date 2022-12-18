@@ -17,13 +17,14 @@ airports = ['LECH', 'LERI', 'LEPP', 'LEMH', 'LELL', 'LEIB',
             'LERT', 'LERL', 'LEAG', 'LEAO', 'GEHM', 'GECE', 'LECV', 'LEEC',
             'LETA', 'LELO', 'GCXM', 'LEBT']
 
+
 def main():
     # URL
     url = 'https://aip.enaire.es/AIP/'
     # Request
     r = requests.get(url=url)
     # Soup
-    soup = BeautifulSoup(r.content, features="html5lib")
+    soup = BeautifulSoup(r.content, "html.parser")
     aip.create_airport_folders(airports, 0o755, soup)
     urls = list(map(aip.create_url,
                     itertools.repeat(url, len(aip.parse_pdf(soup))),
@@ -37,8 +38,6 @@ def main():
                                            aip.create_path(soup),
                                            file))
 
+
 if __name__ == '__main__':
     main()
-
-
-
