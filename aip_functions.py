@@ -36,8 +36,11 @@ def parse_pdf(soup):
     pdf = []
     for a in soup.find_all('a', href=True):
         pdf.append(a['href'])
-    pdf = list(filter(lambda i: ("AD2" or "AD3") in i,
+    pdf_ad2 = list(filter(lambda i: ("AD2") in i,
                       filter(lambda i: "pdf" in i, pdf)))
+    pdf_ad3 = list(filter(lambda i: ("AD3") in i,
+                      filter(lambda i: "pdf" in i, pdf)))
+    pdf = pdf_ad2 + pdf_ad3
     return pdf
 
 

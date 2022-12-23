@@ -1,6 +1,6 @@
-# Spanish airports flying charts personal repository
+# Spanish airports aeronautical charts personal repository
 
-Downloads all AD2 and AD3 flying charts from https://aip.enaire.es/AIP/ and creates a local repository.
+Downloads all AD2 and AD3 aeronautical charts from https://aip.enaire.es/AIP/ and creates a local repository.
 
 Multithreading and progress bar.
 
