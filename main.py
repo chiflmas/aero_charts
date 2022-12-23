@@ -1,21 +1,11 @@
 #!/usr/bin/env python3
 import aip_functions as aip
+from airports import airports
 import requests
 from bs4 import BeautifulSoup
 import itertools
-from concurrent.futures import ThreadPoolExecutor
-
-# OACI airport list
-airports = ['LECH', 'LERI', 'LEPP', 'LEMH', 'LELL', 'LEIB',
-            'LEPA_LESJ', 'LELC', 'LEGE', 'LEAL', 'LESB', 'LEPO',
-            'LERS', 'LXGB', 'LEAM', 'LEZG', 'LEMD', 'LEBB', 'LEXJ', 'LEBA',
-            'LEVX', 'LEZL', 'LEBG', 'LESA', 'LETO', 'LELN', 'LEAS', 'LEVD',
-            'LEGT', 'LERJ', 'LESO', 'LEVT', 'LECO', 'LEST', 'LEMO', 'LEGA',
-            'LEDA', 'LESU', 'LEJR', 'LEMI', 'LETL', 'GCLP', 'GCLA', 'GCXO',
-            'GCRR', 'GSVO', 'GSAI', 'GCTS', 'GCFV', 'GCHI', 'GEML', 'LEMG',
-            'LEGR', 'LEHC', 'LEBZ', 'LEBL', 'LEAB', 'LECU_LEVS', 'GCGM', 'LEVC',
-            'LERT', 'LERL', 'LEAG', 'LEAO', 'GEHM', 'GECE', 'LECV', 'LEEC',
-            'LETA', 'LELO', 'GCXM', 'LEBT']
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 
 def main():
@@ -25,11 +15,18 @@ def main():
     r = requests.get(url=url)
     # Soup
     soup = BeautifulSoup(r.content, "html.parser")
+    # Create folders
     aip.create_airport_folders(airports, 0o755, soup)
+    # Create list of urls to request
     urls = list(map(aip.create_url,
                     itertools.repeat(url, len(aip.parse_pdf(soup))),
                     aip.parse_pdf(soup)))
     threads = []
+    # Counters
+    downloads = 0
+    exceptions = 0
+    # Time counter init
+    t1 = time.perf_counter()
     with ThreadPoolExecutor(max_workers=20) as executor:
         for url in urls:
             file = aip.file_name(url)
@@ -37,6 +34,20 @@ def main():
                                            url,
                                            aip.create_path(soup),
                                            file))
+    # Counter of task completed and exceptions
+    for task in as_completed(threads):
+        if task.done():
+            downloads += 1
+        if task.exception():
+            exceptions += 1
+    # Time counter end
+    t2 = time.perf_counter()
+    # Wait until tqdm last bar finishes
+    time.sleep(10)
+    # Print results
+    print('\n{} flying charts downloaded in {} seconds with {} exceptions.'.format(downloads,
+                                                                                  round((t2-t1),0),
+                                                                                  exceptions))
 
 
 if __name__ == '__main__':

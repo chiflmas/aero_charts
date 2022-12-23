@@ -18,12 +18,12 @@ def file_name(url):
 
 def create_url(url, pdf):
     """
-    Joins base urls and pdf name to create the pdf url
+    Joins base urls and pdf name to create the pdf base_url
     :param url: URL
     :param pdf: file_name
     :return: URL + PDF
     """
-    url = url + pdf
+    url = ''.join([url, pdf])
     return url
 
 
