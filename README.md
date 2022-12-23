@@ -25,6 +25,7 @@ C:\USERS\CHIFL\DESKTOP\FLYING_CHARTS
 ## Usage
 
 ```bash
+git clone https://github.com/chiflmas/aero_charts.git
 python main.py
 ```
 
@@ -76,6 +77,7 @@ TOTAL                           90     24    73%
 
 ## Roadmap
 
+- Implement Logging
 - Ask for a particular airport to download.
 - Cancel download if AIRAC cycle has not changed.
 
